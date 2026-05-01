@@ -18,43 +18,43 @@ export enum AppointmentStatus {
 @Entity('appointments')
 export class Appointment {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ type: 'varchar' })
-  patientPhone: string;
+  patientPhone!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  patientName: string | null;
+  patientName!: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  patientMobile: string | null;
+  patientMobile!: string | null;
 
   @Column({ type: 'date', nullable: true })
-  appointmentDate: string | null;
+  appointmentDate!: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  reasonForVisit: string | null;
+  reasonForVisit!: string | null;
 
   @Column({ type: 'integer' })
-  tokenNumber: number;
+  tokenNumber!: number;
 
   @Column({ type: 'varchar', default: AppointmentStatus.Booked })
-  status: AppointmentStatus;
+  status!: AppointmentStatus;
 
   @Column({ type: 'time' })
-  reportingTime: string;
+  reportingTime!: string;
 
   @ManyToOne(() => Doctor, (doctor) => doctor.appointments, {
     nullable: true,
   })
-  doctor: Doctor | null;
+  doctor!: Doctor | null;
 
   @OneToOne(() => AppointmentSlot, (slot) => slot.appointment, {
     nullable: true,
   })
   @JoinColumn()
-  slot: AppointmentSlot | null;
+  slot!: AppointmentSlot | null;
 
   @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
+  createdAt!: Date;
 }

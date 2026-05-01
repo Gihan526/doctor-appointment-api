@@ -11,7 +11,7 @@ import {
 export class CreateDoctorDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsOptional()
   @IsString()
@@ -19,16 +19,16 @@ export class CreateDoctorDto {
 
   @IsString()
   @IsNotEmpty()
-  startTime: string;
+  startTime!: string;
 
   @IsString()
   @IsNotEmpty()
-  endTime: string;
+  endTime!: string;
 
   @Type(() => Number)
   @IsInt()
   @IsIn([10, 15, 30])
-  slotDurationMinutes: number;
+  slotDurationMinutes!: number;
 
   @IsOptional()
   @Type(() => Number)

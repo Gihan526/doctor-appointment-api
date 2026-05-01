@@ -12,6 +12,7 @@ import { AppointmentSlot } from './appointment-slot.entity';
 
 export enum AppointmentStatus {
   Booked = 'BOOKED',
+  Cancelled = 'CANCELLED',
 }
 
 @Entity('appointments')

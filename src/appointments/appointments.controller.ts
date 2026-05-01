@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
-import { Appointment } from './appointment.entity';
 import { AppointmentsService } from './appointments.service';
 
 @Controller('appointments')
@@ -7,8 +6,13 @@ export class AppointmentsController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
 
   @Get()
-  findAll(): Promise<Appointment[]> {
+  findAll() {
     return this.appointmentsService.findAll();
+  }
+
+  @Get(':appointmentId')
+  findOne(@Param('appointmentId') appointmentId: string) {
+    return this.appointmentsService.findOne(Number(appointmentId));
   }
 
   @Patch(':appointmentId/cancel')
@@ -20,6 +24,11 @@ export class AppointmentsController {
 @Controller('doctors/:doctorId/appointments')
 export class DoctorAppointmentsController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
+
+  @Get()
+  findDoctorAppointments(@Param('doctorId') doctorId: string) {
+    return this.appointmentsService.findDoctorAppointments(Number(doctorId));
+  }
 
   @Post()
   bookTodayAppointment(

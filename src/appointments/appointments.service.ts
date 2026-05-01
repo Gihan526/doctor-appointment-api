@@ -17,13 +17,70 @@ export class AppointmentsService {
     private readonly doctorsRepository: Repository<Doctor>,
   ) {}
 
-  findAll(): Promise<Appointment[]> {
-    return this.appointmentsRepository.find({
+  async findAll() {
+    const appointments = await this.appointmentsRepository.find({
+      relations: {
+        doctor: true,
+        slot: true,
+      },
+      order: {
+        appointmentDate: 'ASC',
+        tokenNumber: 'ASC',
+      },
+    });
+
+    return {
+      message: 'Appointments fetched successfully',
+      data: appointments,
+    };
+  }
+
+  async findOne(appointmentId: number) {
+    const appointment = await this.appointmentsRepository.findOne({
+      where: { id: appointmentId },
       relations: {
         doctor: true,
         slot: true,
       },
     });
+
+    if (!appointment) {
+      throw new NotFoundException('Appointment not found');
+    }
+
+    return {
+      message: 'Appointment fetched successfully',
+      data: appointment,
+    };
+  }
+
+  async findDoctorAppointments(doctorId: number) {
+    const doctor = await this.doctorsRepository.findOne({
+      where: { id: doctorId },
+    });
+
+    if (!doctor) {
+      throw new NotFoundException('Doctor not found');
+    }
+
+    const appointments = await this.appointmentsRepository.find({
+      where: {
+        doctor: { id: doctorId },
+      },
+      relations: {
+        doctor: true,
+        slot: true,
+      },
+      order: {
+        appointmentDate: 'ASC',
+        tokenNumber: 'ASC',
+      },
+    });
+
+    return {
+      message: 'Doctor appointments fetched successfully',
+      data: appointments,
+    };
   }
 
   async bookTodayAppointment(

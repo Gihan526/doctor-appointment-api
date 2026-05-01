@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { BookAppointmentDto } from './dto/book-appointment.dto';
 import { AppointmentsService } from './appointments.service';
 
 @Controller('appointments')
@@ -33,11 +34,7 @@ export class DoctorAppointmentsController {
   @Post()
   bookTodayAppointment(
     @Param('doctorId') doctorId: string,
-    @Body()
-    body: {
-      patientName: string;
-      patientMobile: string;
-    },
+    @Body() body: BookAppointmentDto,
   ) {
     return this.appointmentsService.bookTodayAppointment(
       Number(doctorId),

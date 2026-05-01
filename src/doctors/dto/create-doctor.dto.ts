@@ -1,12 +1,15 @@
 import { Type } from 'class-transformer';
 import {
+  ArrayNotEmpty,
   IsIn,
   IsInt,
+  IsArray,
   IsNotEmpty,
   IsOptional,
   IsString,
   Min,
 } from 'class-validator';
+import { WeekDay } from '../doctor.entity';
 
 export class CreateDoctorDto {
   @IsString()
@@ -35,4 +38,14 @@ export class CreateDoctorDto {
   @IsInt()
   @Min(1)
   dailyCapacity?: number;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsIn(Object.values(WeekDay), { each: true })
+  availableDays?: WeekDay[];
+
+  @IsOptional()
+  @IsIn(Object.values(WeekDay))
+  weeklyOffDay?: WeekDay;
 }

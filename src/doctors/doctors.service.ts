@@ -5,7 +5,16 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Doctor } from './doctor.entity';
+import { Doctor, WeekDay } from './doctor.entity';
+
+const DEFAULT_AVAILABLE_DAYS = [
+  WeekDay.Monday,
+  WeekDay.Tuesday,
+  WeekDay.Wednesday,
+  WeekDay.Thursday,
+  WeekDay.Friday,
+  WeekDay.Saturday,
+];
 
 @Injectable()
 export class DoctorsService {
@@ -21,12 +30,25 @@ export class DoctorsService {
     endTime: string;
     slotDurationMinutes: number;
     dailyCapacity?: number;
+    availableDays?: WeekDay[];
+    weeklyOffDay?: WeekDay;
   }): Promise<Doctor> {
+    const startTime = this.normalizeTime(data.startTime, 'startTime');
+    const endTime = this.normalizeTime(data.endTime, 'endTime');
+
     const doctor = this.doctorRepo.create({
       ...data,
-      startTime: this.normalizeTime(data.startTime, 'startTime'),
-      endTime: this.normalizeTime(data.endTime, 'endTime'),
-      dailyCapacity: data.dailyCapacity ?? 30,
+      startTime,
+      endTime,
+      dailyCapacity:
+        data.dailyCapacity ??
+        this.calculateSlotCapacity(
+          startTime,
+          endTime,
+          data.slotDurationMinutes,
+        ),
+      availableDays: data.availableDays ?? DEFAULT_AVAILABLE_DAYS,
+      weeklyOffDay: data.weeklyOffDay ?? WeekDay.Sunday,
     });
 
     return this.doctorRepo.save(doctor);
@@ -62,5 +84,27 @@ export class DoctorsService {
     }
 
     return value.length === 5 ? `${value}:00` : value;
+  }
+
+  private calculateSlotCapacity(
+    startTime: string,
+    endTime: string,
+    slotDurationMinutes: number,
+  ): number {
+    const startMinutes = this.timeToMinutes(startTime);
+    const endMinutes = this.timeToMinutes(endTime);
+    const availableMinutes = endMinutes - startMinutes;
+
+    if (availableMinutes <= 0) {
+      throw new BadRequestException('endTime must be after startTime');
+    }
+
+    return Math.floor(availableMinutes / slotDurationMinutes);
+  }
+
+  private timeToMinutes(time: string): number {
+    const [hours, minutes] = time.split(':').map(Number);
+
+    return hours * 60 + minutes;
   }
 }

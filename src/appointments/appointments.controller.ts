@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { BookAppointmentDto } from './dto/book-appointment.dto';
 import { AppointmentsService } from './appointments.service';
 
@@ -39,6 +47,22 @@ export class DoctorAppointmentsController {
     return this.appointmentsService.bookTodayAppointment(
       Number(doctorId),
       body,
+    );
+  }
+}
+
+@Controller('doctors/:doctorId/availability')
+export class DoctorAvailabilityController {
+  constructor(private readonly appointmentsService: AppointmentsService) {}
+
+  @Get()
+  getDoctorAvailability(
+    @Param('doctorId') doctorId: string,
+    @Query('date') date?: string,
+  ) {
+    return this.appointmentsService.getDoctorAvailability(
+      Number(doctorId),
+      date,
     );
   }
 }

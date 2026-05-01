@@ -11,26 +11,26 @@ import { Appointment } from './appointment.entity';
 @Entity('appointment_slots')
 export class AppointmentSlot {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ type: 'date' })
-  date: string;
+  date!: string;
 
   @Column({ type: 'time' })
-  startTime: string;
+  startTime!: string;
 
   @Column({ type: 'time' })
-  endTime: string;
+  endTime!: string;
 
   @Column({ type: 'boolean', default: false })
-  isBooked: boolean;
+  isBooked!: boolean;
 
   @ManyToOne(() => Doctor, (doctor) => doctor.slots, {
     onDelete: 'CASCADE',
     nullable: true,
   })
-  doctor: Doctor | null;
+  doctor!: Doctor | null;
 
   @OneToOne(() => Appointment, (appointment) => appointment.slot)
-  appointment: Appointment | null;
+  appointment!: Appointment | null;
 }

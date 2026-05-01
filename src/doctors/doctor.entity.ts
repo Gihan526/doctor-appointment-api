@@ -5,29 +5,29 @@ import { AppointmentSlot } from '../appointments/appointment-slot.entity';
 @Entity('doctors')
 export class Doctor {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  name: string;
+  name!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  specialization: string | null;
+  specialization!: string | null;
 
   @Column({ type: 'time' })
-  startTime: string;
+  startTime!: string;
 
   @Column({ type: 'time' })
-  endTime: string;
+  endTime!: string;
 
   @Column({ type: 'integer' })
-  slotDurationMinutes: number;
+  slotDurationMinutes!: number;
 
   @Column({ type: 'integer', default: 30 })
-  dailyCapacity: number;
+  dailyCapacity!: number;
 
   @OneToMany(() => Appointment, (appointment) => appointment.doctor)
-  appointments: Appointment[];
+  appointments!: Appointment[];
 
   @OneToMany(() => AppointmentSlot, (slot) => slot.doctor)
-  slots: AppointmentSlot[];
+  slots!: AppointmentSlot[];
 }

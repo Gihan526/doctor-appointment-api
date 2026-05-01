@@ -22,6 +22,9 @@ export class Doctor {
   @Column({ type: 'integer' })
   slotDurationMinutes: number;
 
+  @Column({ type: 'integer', default: 30 })
+  dailyCapacity: number;
+
   @OneToMany(() => Appointment, (appointment) => appointment.doctor)
   appointments: Appointment[];
 

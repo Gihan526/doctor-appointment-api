@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { Appointment } from './appointment.entity';
 import { AppointmentsService } from './appointments.service';
 
@@ -9,6 +9,11 @@ export class AppointmentsController {
   @Get()
   findAll(): Promise<Appointment[]> {
     return this.appointmentsService.findAll();
+  }
+
+  @Patch(':appointmentId/cancel')
+  cancelAppointment(@Param('appointmentId') appointmentId: string) {
+    return this.appointmentsService.cancelAppointment(Number(appointmentId));
   }
 }
 

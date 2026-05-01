@@ -104,6 +104,41 @@ export class AppointmentsService {
     };
   }
 
+  async cancelAppointment(appointmentId: number) {
+    const appointment = await this.appointmentsRepository.findOne({
+      where: { id: appointmentId },
+      relations: {
+        doctor: true,
+      },
+    });
+
+    if (!appointment) {
+      throw new NotFoundException('Appointment not found');
+    }
+
+    if (appointment.status === AppointmentStatus.Cancelled) {
+      return {
+        message: 'Appointment already cancelled',
+        data: {
+          appointmentId: appointment.id,
+          status: appointment.status,
+        },
+      };
+    }
+
+    appointment.status = AppointmentStatus.Cancelled;
+    const savedAppointment =
+      await this.appointmentsRepository.save(appointment);
+
+    return {
+      message: 'Appointment cancelled successfully',
+      data: {
+        appointmentId: savedAppointment.id,
+        status: savedAppointment.status,
+      },
+    };
+  }
+
   private getDateString(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');

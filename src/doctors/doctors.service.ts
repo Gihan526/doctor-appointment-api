@@ -20,11 +20,13 @@ export class DoctorsService {
     startTime: string;
     endTime: string;
     slotDurationMinutes: number;
+    dailyCapacity?: number;
   }): Promise<Doctor> {
     const doctor = this.doctorRepo.create({
       ...data,
       startTime: this.normalizeTime(data.startTime, 'startTime'),
       endTime: this.normalizeTime(data.endTime, 'endTime'),
+      dailyCapacity: data.dailyCapacity ?? 30,
     });
 
     return this.doctorRepo.save(doctor);

@@ -14,6 +14,7 @@ export class DoctorsController {
       startTime: string;
       endTime: string;
       slotDurationMinutes: number;
+      dailyCapacity?: number;
     },
   ) {
     return this.doctorsService.createDoctor(body);

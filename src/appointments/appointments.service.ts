@@ -41,33 +41,35 @@ export class AppointmentsService {
       throw new NotFoundException('Doctor not found');
     }
 
-    const today = this.getDateString(new Date());
-    const todayBookedCount = await this.countBookedAppointments(
-      doctorId,
-      today,
-    );
+    const today = new Date();
+    const todayDateString = this.getDateString(today);
+    let appointmentDate: string | null = null;
+    let tokenNumber: number | null = null;
 
-    let appointmentDate = today;
-    let tokenNumber = todayBookedCount + 1;
-    let message = 'Appointment booked successfully';
+    for (let dayOffset = 0; dayOffset <= 3; dayOffset += 1) {
+      const dateToCheck = this.addDays(today, dayOffset);
 
-    if (todayBookedCount >= doctor.dailyCapacity) {
-      const tomorrow = this.getDateString(this.addDays(new Date(), 1));
-      const tomorrowBookedCount = await this.countBookedAppointments(
-        doctorId,
-        tomorrow,
-      );
-
-      if (tomorrowBookedCount >= doctor.dailyCapacity) {
-        throw new BadRequestException(
-          'No appointments available today or tomorrow',
-        );
+      if (this.isSunday(dateToCheck)) {
+        continue;
       }
 
-      appointmentDate = tomorrow;
-      tokenNumber = tomorrowBookedCount + 1;
-      message =
-        'No appointments available today. Appointment booked for tomorrow.';
+      const dateString = this.getDateString(dateToCheck);
+      const bookedCount = await this.countBookedAppointments(
+        doctorId,
+        dateString,
+      );
+
+      if (bookedCount < doctor.dailyCapacity) {
+        appointmentDate = dateString;
+        tokenNumber = bookedCount + 1;
+        break;
+      }
+    }
+
+    if (!appointmentDate || !tokenNumber) {
+      throw new BadRequestException(
+        'No appointments available in the next 3 days',
+      );
     }
 
     const appointment = this.appointmentsRepository.create({
@@ -85,7 +87,10 @@ export class AppointmentsService {
       await this.appointmentsRepository.save(appointment);
 
     return {
-      message,
+      message:
+        appointmentDate === todayDateString
+          ? 'Appointment booked successfully'
+          : 'No appointments available today. Appointment booked for next available day.',
       data: {
         appointmentId: savedAppointment.id,
         doctorId: doctor.id,
@@ -112,6 +117,10 @@ export class AppointmentsService {
     nextDate.setDate(nextDate.getDate() + days);
 
     return nextDate;
+  }
+
+  private isSunday(date: Date): boolean {
+    return date.getDay() === 0;
   }
 
   private countBookedAppointments(

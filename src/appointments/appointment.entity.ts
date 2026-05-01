@@ -10,6 +10,10 @@ import {
 import { Doctor } from '../doctors/doctor.entity';
 import { AppointmentSlot } from './appointment-slot.entity';
 
+export enum AppointmentStatus {
+  Booked = 'BOOKED',
+}
+
 @Entity('appointments')
 export class Appointment {
   @PrimaryGeneratedColumn()
@@ -22,10 +26,19 @@ export class Appointment {
   patientName: string | null;
 
   @Column({ type: 'varchar', nullable: true })
+  patientMobile: string | null;
+
+  @Column({ type: 'date', nullable: true })
+  appointmentDate: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
   reasonForVisit: string | null;
 
   @Column({ type: 'integer' })
   tokenNumber: number;
+
+  @Column({ type: 'varchar', default: AppointmentStatus.Booked })
+  status: AppointmentStatus;
 
   @Column({ type: 'time' })
   reportingTime: string;
